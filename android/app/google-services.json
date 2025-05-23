@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "725752089432",
+    "project_id": "gaz-rapide",
+    "storage_bucket": "gaz-rapide.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:725752089432:android:a14f697fc9e3787ef0f32d",
+        "android_client_info": {
+          "package_name": "com.example.gazrapide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "725752089432-44gih80nbf2s2l7n2r7gh1qjss9gujpa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gazrapide",
+            "certificate_hash": "0786ffce222d3d93833bb2a0ca08212fafa84747"
+          }
+        },
+        {
+          "client_id": "725752089432-snapf64jl5vajb3bubkc7jpohigblmkf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsgvOdIIR92p4MFKzNwdahNnU7PHxicXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "725752089432-snapf64jl5vajb3bubkc7jpohigblmkf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "725752089432-4duo5neprpogucfunokq0qelo5kgugjc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gazrapide"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
