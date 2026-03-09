@@ -2,12 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gazrapide/pages/home_page.dart';
+import 'package:gazrapide/pages/landing_page.dart';
 import 'package:gazrapide/pages/politique.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../pages/auth_page.dart';
 
 class MainDrawer extends StatefulWidget {
+  const MainDrawer({super.key});
+
   @override
   State<MainDrawer> createState() => _MainDrawerState();
 }
@@ -33,7 +35,7 @@ class _MainDrawerState extends State<MainDrawer> {
       // Redirection vers la page Auth
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => AuthPage()),
+        MaterialPageRoute(builder: (context) => LandingPage()),
         (Route<dynamic> route) => false,
       );
     } catch (e) {
@@ -49,8 +51,8 @@ class _MainDrawerState extends State<MainDrawer> {
   ///Fonction vers la page Facebook
   final Uri toLaunch = Uri(
     scheme: 'https',
-    host: 'www.facebook.com',
-    path: '/bitgraphic1',
+    host: 'wa.me',
+    path: '/22654288212',
   );
   Future<void> _launchInBrowser(Uri url) async {
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
@@ -72,7 +74,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   "Gaz Rapide",
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
-                    fontSize: 40,
+                    fontSize: 30,
                     color: Colors.white,
                   ),
                 ),
@@ -93,6 +95,7 @@ class _MainDrawerState extends State<MainDrawer> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                //Bouton Accueil
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -129,6 +132,8 @@ class _MainDrawerState extends State<MainDrawer> {
                     ),
                   ),
                 ),
+
+                //Bouton Déconnexion
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -161,6 +166,8 @@ class _MainDrawerState extends State<MainDrawer> {
                     ),
                   ),
                 ),
+
+                //Bouton Contact
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -180,7 +187,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         ), // Logo depuis font_awesome
                         SizedBox(width: 10),
                         Text(
-                          "Contacter les développeurs",
+                          "Contactez-nous",
                           style: TextStyle(
                             color: Colors.red[900],
                             fontWeight: FontWeight.w800,
@@ -191,6 +198,8 @@ class _MainDrawerState extends State<MainDrawer> {
                     ),
                   ),
                 ),
+
+                //Bouton Politique d'utilisation
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -226,13 +235,6 @@ class _MainDrawerState extends State<MainDrawer> {
                     ),
                   ),
                 ),
-                /*SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    "${auth.currentUser?.isAnonymous} \n ${auth.currentUser?.email} \n ${auth.currentUser?.phoneNumber} \n ${auth.currentUser?.displayName} \n ${auth.currentUser?.uid} \n ",
-                  ),
-                ),*/
-                //Expanded(child: Text('${shopsList}')),
               ],
             ),
           ),

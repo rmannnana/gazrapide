@@ -80,10 +80,10 @@ class _HomePageState extends State<HomePage> {
 
   ///Requête des points de vente depuis firestore
   Stream<List<Shop>> getShopsStream() {
-    final CollectionReference _shops = FirebaseFirestore.instance.collection(
+    final CollectionReference shops0 = FirebaseFirestore.instance.collection(
       "sellingpoint",
     );
-    return _shops.snapshots().map((snapshot) {
+    return shops0.snapshots().map((snapshot) {
       List<Shop> shops =
           snapshot.docs
               .map((doc) {

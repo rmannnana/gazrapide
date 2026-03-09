@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class PhoneAuthScreen extends StatefulWidget {
+  const PhoneAuthScreen({super.key});
+
   @override
   _PhoneAuthScreenState createState() => _PhoneAuthScreenState();
 }

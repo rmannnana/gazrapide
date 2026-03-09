@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gazrapide/pages/auth_page.dart';
 import 'package:gazrapide/pages/home_page.dart';
@@ -15,13 +16,26 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   /// Connexion Anonyme
   Future<void> handleAnonymousSignIn(BuildContext context) async {
-    await Auth().signinAnonymously();
+    try {
+      if (FirebaseAuth.instance.currentUser == null) {
+        await Auth().signinAnonymously();
+      }
 
-    // Redirection après connexion
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
+      if (!context.mounted) return; // ⚠️ Sécurité async gap
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } catch (e) {
+      debugPrint('Erreur connexion anonyme: $e'); // Vérifie la console Flutter
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: ${e.toString()}')),
+      );
+    }
   }
 
   @override
@@ -56,7 +70,6 @@ class _LandingPageState extends State<LandingPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => handleAnonymousSignIn(context),
-                      child: Text("Je cherche un point de vente"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[900],
                         foregroundColor: Colors.white,
@@ -66,6 +79,7 @@ class _LandingPageState extends State<LandingPage> {
                           fontSize: 18,
                         ),
                       ),
+                      child: Text("Je cherche un point de vente"),
                     ),
                   ),
                   SizedBox(height: 50),
@@ -79,7 +93,6 @@ class _LandingPageState extends State<LandingPage> {
                           MaterialPageRoute(builder: (context) => AuthPage()),
                         );
                       },
-                      child: Text("Je vend le Gaz"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[900],
                         foregroundColor: Colors.white,
@@ -89,6 +102,7 @@ class _LandingPageState extends State<LandingPage> {
                           fontSize: 18,
                         ),
                       ),
+                      child: Text("Je vend le Gaz"),
                     ),
                   ),
                   SizedBox(height: 10),

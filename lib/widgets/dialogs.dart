@@ -14,7 +14,7 @@ String fullLoginPhoneNumber = ""; // Stocke le numéro complet pour connexion
 final TextEditingController _phoneLoginController = TextEditingController();
 
 String displayPhone(String input) {
-  return input.substring(0, 4) + " " + input.substring(4);
+  return "${input.substring(0, 4)} ${input.substring(4)}";
 }
 
 // Demande permission pour appel téléphonique
@@ -127,10 +127,10 @@ class OtpCheckBox extends StatefulWidget {
   final Function(String) onSubmitOTP;
 
   const OtpCheckBox({
-    Key? key,
+    super.key,
     required this.verificationId,
     required this.onSubmitOTP,
-  }) : super(key: key);
+  });
 
   @override
   State<OtpCheckBox> createState() => _OtpCheckBoxState();
@@ -358,7 +358,7 @@ class CustomDialogs {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "${selectedShop.name}",
+                selectedShop.name,
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
               ),
               SizedBox(height: 20),
