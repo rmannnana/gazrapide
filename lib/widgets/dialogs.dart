@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-String fullSigninPhoneNumber = ""; // Stocke le numéro complet pour inscription
+String fullPhoneNumber = ""; // Stocke le numéro complet pour inscription
 String fullLoginPhoneNumber = ""; // Stocke le numéro complet pour connexion
 
 //Variables et controlleurs de la connexion
@@ -150,9 +150,9 @@ class _OtpCheckBoxState extends State<OtpCheckBox> {
         await widget.onSubmitOTP(otp);
         Navigator.pop(context); // Ferme la boîte de dialogue après succès
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erreur : Code OTP invalide.")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Erreur : Code OTP invalide.")));
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -170,7 +170,8 @@ class _OtpCheckBoxState extends State<OtpCheckBox> {
         borderRadius: BorderRadius.circular(20), // Bord arrondi
       ),
       content: Column(
-        mainAxisSize: MainAxisSize.min, // Pour éviter que le dialog soit trop grand
+        mainAxisSize:
+            MainAxisSize.min, // Pour éviter que le dialog soit trop grand
         children: [
           Text(
             "Vous avez reçu un code par SMS,",
@@ -205,9 +206,10 @@ class _OtpCheckBoxState extends State<OtpCheckBox> {
               ),
               ElevatedButton(
                 onPressed: isLoading ? null : verifyOTP,
-                child: isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Text("Valider"),
+                child:
+                    isLoading
+                        ? CircularProgressIndicator(color: Colors.white)
+                        : Text("Valider"),
               ),
             ],
           ),

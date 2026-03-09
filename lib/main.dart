@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
       stream: auth.authStateChanges(), // toujours à jour
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // Tu peux mettre un écran de chargement
+          // Écran de chargement pendant la vérification de l'état de connexion
           return MaterialApp(home: LoadingScreen());
         } else if (snapshot.hasData) {
           // Utilisateur connecté (anonyme ou non)
