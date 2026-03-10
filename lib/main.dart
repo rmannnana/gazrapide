@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gazrapide/general_variables.dart';
 import 'package:gazrapide/pages/home_page.dart';
 import 'package:gazrapide/pages/landing_page.dart';
-import 'package:gazrapide/pages/loading_screen.dart';
+
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -25,16 +25,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: auth.authStateChanges(), // toujours à jour
+      // Désigne la page à afficher selon l'état de l'authentification
+      stream: auth.authStateChanges(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Écran de chargement pendant la vérification de l'état de connexion
-          return MaterialApp(home: LoadingScreen());
-        } else if (snapshot.hasData) {
-          // Utilisateur connecté (anonyme ou non)
+        if (snapshot.hasData) {
           return MaterialApp(home: HomePage());
         } else {
-          // Aucun utilisateur connecté
           return MaterialApp(home: LandingPage());
         }
       },

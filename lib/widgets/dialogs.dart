@@ -1,17 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import '../models.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-String fullPhoneNumber = ""; // Stocke le numéro complet pour inscription
-String fullLoginPhoneNumber = ""; // Stocke le numéro complet pour connexion
-
-//Variables et controlleurs de la connexion
-final TextEditingController _phoneLoginController = TextEditingController();
+import '../models.dart';
 
 String displayPhone(String input) {
   return "${input.substring(0, 4)} ${input.substring(4)}";
@@ -43,84 +38,6 @@ void _makePhoneCall(String phoneNumber) async {
   }
 }
 
-////////////////////////////////////////////////////////////////
-/*
-/// Fenêtre de saisie du code reçu par SMS pour valider l'inscription
-class OtpCheckBox extends StatefulWidget {
-  final String verificationId;
-  final Function(String) onSubmitOTP;
-
-  const OtpCheckBox({
-    Key? key,
-    required this.verificationId,
-    required this.onSubmitOTP,
-  }) : super(key: key);
-
-  @override
-  State<OtpCheckBox> createState() => _OtpCheckBoxState();
-}
-
-class _OtpCheckBoxState extends State<OtpCheckBox> {
-  final TextEditingController _otpController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20), // Bord arrondi
-      ),
-      content: Column(
-        mainAxisSize:
-            MainAxisSize.min, // Pour éviter que le dialog soit trop grand
-        children: [
-          Text(
-            "Vous avez reçu un code par SMS,",
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 24),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 24),
-          Text(
-            "Saisissez-le ici",
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-          ),
-          SizedBox(height: 36),
-          TextField(
-            controller: _otpController,
-            decoration: InputDecoration(
-              labelText: "Entrez le code reçu par SMS",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30), // Bord arrondi
-                borderSide: BorderSide(color: Colors.black), // Contour noir
-              ),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop;
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("Annuler", style: TextStyle(color: Colors.white)),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  String otp = _otpController.text.trim();
-                  widget.onSubmitOTP(otp);
-                },
-                child: Text("Valider"),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}*/
-
 /// Fenêtre de saisie du code reçu par SMS pour valider l'inscription
 class OtpCheckBox extends StatefulWidget {
   final String verificationId;
@@ -142,25 +59,23 @@ class _OtpCheckBoxState extends State<OtpCheckBox> {
 
   void verifyOTP() async {
     setState(() => isLoading = true);
-
     String otp = _otpController.text.trim();
 
     if (otp.length == 6) {
       try {
+        Navigator.pop(context); // Fermeture du dialog
         await widget.onSubmitOTP(otp);
-        Navigator.pop(context); // Ferme la boîte de dialogue après succès
       } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Erreur : Code OTP invalide.")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur : Code OTP invalide.")),
+        );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Veuillez entrer un code OTP valide.")),
+        const SnackBar(content: Text("Veuillez entrer un code OTP valide.")),
       );
+      setState(() => isLoading = false);
     }
-
-    setState(() => isLoading = false);
   }
 
   @override
@@ -220,76 +135,8 @@ class _OtpCheckBoxState extends State<OtpCheckBox> {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// Fenêtre de saisie du numéro de téléphone pour récupérer le mot de passe
-class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({super.key});
 
-  @override
-  State<ForgotPassword> createState() => _ForgotPasswordState();
-}
-
-class _ForgotPasswordState extends State<ForgotPassword> {
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20), // Bord arrondi
-      ),
-      content: Column(
-        mainAxisSize:
-            MainAxisSize.min, // Pour éviter que le dialog soit trop grand
-        children: [
-          Text(
-            "Quel est votre numéro de téléphone ?",
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 24),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 36),
-          IntlPhoneField(
-            controller: _phoneLoginController,
-            decoration: InputDecoration(
-              labelText: "Entrez votre numéro de téléphone",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            initialCountryCode: 'BF', // Par défaut, Burkina Faso
-            onChanged: (phone) {
-              setState(() {
-                fullLoginPhoneNumber =
-                    phone.completeNumber; // Récupère le numéro avec indicatif
-              });
-            },
-          ),
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // Ferme le dialog
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("Annuler", style: TextStyle(color: Colors.white)),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop;
-                },
-                child: Text("Valider"),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Fonction pour mettre à jour les informations d'un point sur Firestore
+/// Fonction pour mettre à jour les informations d'un shop sur Firestore
 Future<void> updateShopOnFirestore(Shop shop) async {
   try {
     final shopRef = FirebaseFirestore.instance
@@ -302,14 +149,9 @@ Future<void> updateShopOnFirestore(Shop shop) async {
             .where((phone) => phone.isNotEmpty) // Filtrer les numéros vides
             .toList();
 
-    /*
-    print('_____________________${shop.phonenumbers}');
-    print('_________________________${validPhoneNumbers}');
-    */
     // Mise à jour des informations du shop
     await shopRef.update({
       'name': shop.name,
-
       'phonenumbers': validPhoneNumbers,
       'location': GeoPoint(
         shop.latitude,

@@ -2,13 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gazrapide/general_variables.dart';
-import 'package:gazrapide/pages/home_page.dart';
 import 'package:gazrapide/pages/landing_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:universe/universe.dart';
+
 import '../services/firebase/firebase_auth.dart';
 import '../widgets/dialogs.dart';
+import 'home_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -21,7 +22,6 @@ class _AuthPageState extends State<AuthPage> {
   User? user = FirebaseAuth.instance.currentUser;
 
   /// Variables et controlleurs de l'authentification par téléphone
-  //bool _isLoginObscured = true;
   final TextEditingController _phoneController = TextEditingController();
 
   /// Numéro complet (avec l'indicatif du pays). Cette variable est mise à jour à chaque changement dans le champ de numéro de téléphone.
@@ -36,17 +36,21 @@ class _AuthPageState extends State<AuthPage> {
 
   /// Méthode d'authentification via Google
   Future<void> handleGoogleSignIn(BuildContext context) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null && currentUser.isAnonymous) {
+      await currentUser.delete();
+    }
+
     final userCredential = await Auth().signinWithGoogle();
-    if (userCredential != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else {
+
+    if (userCredential == null) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Échec de la connexion avec Google')),
+        const SnackBar(content: Text('Connexion Google annulée ou échouée')),
       );
     }
+    // Si succès : le StreamBuilder gère la redirection automatiquement
   }
 
   ///Authentification par numero de téléphone. Cette méthode utilise Firebase pour envoyer un code de vérification au numéro de téléphone fourni, puis affiche une boîte de dialogue pour que l'utilisateur puisse entrer le code OTP reçu. Si le code est correct, l'utilisateur est connecté et redirigé vers la page d'accueil.
@@ -56,14 +60,21 @@ class _AuthPageState extends State<AuthPage> {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: fullPhoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
+          // Android uniquement : détection automatique du code
           await FirebaseAuth.instance.signInWithCredential(credential);
+          // La navigation vers HomePage est gérée par le StreamBuilder dans main.dart
         },
         verificationFailed: (FirebaseAuthException e) {
+          if (!mounted) return;
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text("Erreur : ${e.message}")));
         },
         codeSent: (String verificationId, int? resendToken) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Un code vous a été envoyé par SMS.")),
+          );
           showDialog(
             barrierDismissible: false,
             context: context,
@@ -71,60 +82,57 @@ class _AuthPageState extends State<AuthPage> {
                 (context) => OtpCheckBox(
                   verificationId: verificationId,
                   onSubmitOTP: (otp) async {
-                    try {
-                      PhoneAuthCredential credential =
-                          PhoneAuthProvider.credential(
-                            verificationId: verificationId,
-                            smsCode: otp,
-                          );
+                    PhoneAuthCredential credential =
+                        PhoneAuthProvider.credential(
+                          verificationId: verificationId,
+                          smsCode: otp,
+                        );
+                    // final currentUser = FirebaseAuth.instance.currentUser;
+                    // await currentUser
+                    //    ?.delete(); // Suppression de la session anonym
+                    // Force une vraie déconnexion pour que authStateChanges se déclenche
+                    await FirebaseAuth.instance.signOut();
 
-                      await FirebaseAuth.instance.signInWithCredential(
-                        credential,
-                      );
+                    // Petite pause pour laisser le stream traiter la déconnexion
+                    await Future.delayed(Duration(milliseconds: 500));
 
-                      // Fermeture la boîte de dialogue
-                      Navigator.pop(context);
-
-                      // Redirection vers la page d'accueil
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    } catch (e) {
-                      print("Erreur OTP: $e");
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Code OTP incorrect ou expiré."),
-                        ),
-                      );
-                    }
+                    await FirebaseAuth.instance.signInWithCredential(
+                      credential,
+                    );
+                    await FirebaseAuth.instance.signInWithCredential(
+                      credential,
+                    );
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                    );
+                    // Le StreamBuilder détecte le changement et redirige automatiquement
                   },
                 ),
           );
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          setState(() {
-            ///this.verificationId = verificationId;
-            verificationId = verificationId;
-          });
+          // Pas de setState nécessaire ici si tu n'utilises pas
+          // verificationId ailleurs dans le widget
         },
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Veuillez entrer un numéro valide.")),
+        const SnackBar(content: Text("Veuillez entrer un numéro valide.")),
       );
     }
   }
 
-  ////////////////////////////////////////////////////////
   /// Fin des méthodes d'authentification
 
   /// Obtention de la position de l'utilisateur
   Future<void> _getUserLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!mounted) return; // ✅ manquait ici
     if (!serviceEnabled) {
-      // Au cas où les services de localisation sont désactivés, afficher un message ou demander à l'utilisateur de les activer
-      print("Location service désactivé");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Veuillez activer la localisation.")),
+      );
       return;
     }
 
@@ -132,19 +140,24 @@ class _AuthPageState extends State<AuthPage> {
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       permission = await Geolocator.requestPermission();
+      if (!mounted) return;
       if (permission != LocationPermission.whileInUse &&
           permission != LocationPermission.always) {
-        print("Permission refusée");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Permission refusée")));
         return;
       }
     }
 
     Position position = await Geolocator.getCurrentPosition();
+    if (!mounted) return;
     setState(() {
       userPosition = LatLng(position.latitude, position.longitude);
     });
-
-    print('Position récupérée : $userPosition');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Position récupérée : $userPosition')),
+    );
   }
 
   @override
@@ -198,8 +211,10 @@ class _AuthPageState extends State<AuthPage> {
                         vertical: 16,
                       ),
                     ),
-                    onPressed:
-                        () => {handleGoogleSignIn(context), _getUserLocation()},
+                    onPressed: () async {
+                      await handleGoogleSignIn(context);
+                      await _getUserLocation();
+                    },
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,

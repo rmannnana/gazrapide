@@ -16,7 +16,7 @@ class Auth {
     );
   }
 
-  /// Création d'utilisateur à partir de son adresse mail et un mot de passe
+  /// Signin avec Email et Mot de passe
   Future<void> createUserWithEmailAndPassword(
     String email,
     String password,
@@ -30,6 +30,25 @@ class Auth {
   /// Connexion anonyme
   Future<void> signinAnonymously() async {
     await _firebaseAuth.signInAnonymously();
+  }
+
+  /// Méthode qui récupère le credential Google sans connecter directement
+  Future<AuthCredential?> getGoogleCredential() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return null;
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      return GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+    } catch (e) {
+      print('Google Credential Error: $e');
+      return null;
+    }
   }
 
   /// Sign_in avce GOOGLE

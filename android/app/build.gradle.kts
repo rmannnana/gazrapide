@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.gazrapide"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -18,25 +18,22 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    /*dependencies {
+    dependencies {
         // Import the BoM for the Firebase platform
-        implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+        implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
 
         // Add the dependency for the Firebase Authentication library
         // When using the BoM, you don't specify versions in Firebase library dependencies
         implementation("com.google.firebase:firebase-auth")
-    }*/
+    }
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.gazrapide"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = flutter.minSdkVersion                        // ← valeur fixe, plus de flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

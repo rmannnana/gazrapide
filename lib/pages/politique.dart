@@ -53,7 +53,7 @@ class _PolitiqueState extends State<Politique> {
               ),
               SizedBox(height: 10),
               Text(
-                'Gaz Rapide a pour but de faciliter l\'accès rapide au gaz domestique en connectant les utilisateurs avec les revendeurs les plus proches via une carte interactive et des informations de contact à jour.',
+                'Gaz Rapide a pour but de faciliter l\'accès rapide au gaz domestique en connectant les clients avec les vendeurs les plus proches via une carte interactive et des informations de contact à jour.',
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),
@@ -76,7 +76,7 @@ class _PolitiqueState extends State<Politique> {
                 style: TextStyle(fontSize: 16),
               ),
               Text(
-                '• Données de contact : pour que les utilisateurs puissent appeler directement les vendeurs via l\'application.',
+                '• Données de contact : pour que les clients puissent appeler directement les vendeurs via l\'application.',
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 10),
@@ -148,7 +148,7 @@ class _PolitiqueState extends State<Politique> {
               ),
               SizedBox(height: 10),
               Text(
-                'Pour toute question ou réclamation, contactez-nous à : +226 06 11 27 27',
+                'Pour toute question ou réclamation, contactez-nous à : +226 54 28 82 12',
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 50),

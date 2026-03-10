@@ -17,9 +17,9 @@ class _LandingPageState extends State<LandingPage> {
   /// Connexion Anonyme
   Future<void> handleAnonymousSignIn(BuildContext context) async {
     try {
-      if (FirebaseAuth.instance.currentUser == null) {
-        await Auth().signinAnonymously();
-      }
+      final currentUser = FirebaseAuth.instance.currentUser;
+      await currentUser?.delete();
+      await Auth().signinAnonymously();
 
       if (!context.mounted) return; // ⚠️ Sécurité async gap
 
@@ -32,9 +32,9 @@ class _LandingPageState extends State<LandingPage> {
 
       if (!context.mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erreur: ${e.toString()}')));
     }
   }
 
@@ -130,24 +130,3 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 }
-
-/*
-------- Design de ElevetadeButton --------
-ElevatedButton(
-  onPressed: () {
-    print("Bouton pressé !");
-  },
-  style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.blue, // Couleur du bouton
-    foregroundColor: Colors.white, // Couleur du texte
-    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15), // Padding interne
-    textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Style du texte
-    shape: RoundedRectangleBorder( // Bordures arrondies
-      borderRadius: BorderRadius.circular(20),
-    ),
-    elevation: 5, // Ombre sous le bouton
-  ),
-  child: Text("Cliquer"),
-)
-
- */
