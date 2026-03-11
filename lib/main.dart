@@ -28,6 +28,11 @@ class _MyAppState extends State<MyApp> {
       // Désigne la page à afficher selon l'état de l'authentification
       stream: auth.authStateChanges(),
       builder: (context, snapshot) {
+        print("STREAM EVENT");
+        print("snapshot.hasData = ${snapshot.hasData}");
+        print("uid = ${snapshot.data?.uid}");
+        print("isAnonymous = ${snapshot.data?.isAnonymous}");
+
         if (snapshot.hasData) {
           return MaterialApp(home: HomePage());
         } else {

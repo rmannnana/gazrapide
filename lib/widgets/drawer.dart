@@ -80,7 +80,7 @@ class _MainDrawerState extends State<MainDrawer> {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  "Gaz Rapide vous permet de trouver du gaz rapidement et à proximité de votre position.",
+                  "Trouver le gaz rapidement",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -224,7 +224,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         ), // Logo depuis font_awesome
                         SizedBox(width: 10),
                         Text(
-                          "Politique d'utilisation",
+                          "Politique",
                           style: TextStyle(
                             color: Colors.red[900],
                             fontWeight: FontWeight.w800,

@@ -17,8 +17,8 @@ class _LandingPageState extends State<LandingPage> {
   /// Connexion Anonyme
   Future<void> handleAnonymousSignIn(BuildContext context) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      await currentUser?.delete();
+      // Déconnecte toute session en cours avant connexion anonyme
+      await FirebaseAuth.instance.signOut();
       await Auth().signinAnonymously();
 
       if (!context.mounted) return; // ⚠️ Sécurité async gap

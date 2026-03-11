@@ -8,8 +8,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:universe/universe.dart';
 
 import '../services/firebase/firebase_auth.dart';
-import '../widgets/dialogs.dart';
-import 'home_page.dart';
+import 'otp_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -21,10 +20,13 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   User? user = FirebaseAuth.instance.currentUser;
 
+  bool isLoading = false;
+
   /// Variables et controlleurs de l'authentification par téléphone
   final TextEditingController _phoneController = TextEditingController();
 
-  /// Numéro complet (avec l'indicatif du pays). Cette variable est mise à jour à chaque changement dans le champ de numéro de téléphone.
+  /// Numéro complet (avec l'indicatif du pays). Cette variable est mise à jour
+  /// à chaque changement dans le champ de numéro de téléphone.
   String fullPhoneNumber = "";
 
   @override
@@ -53,73 +55,62 @@ class _AuthPageState extends State<AuthPage> {
     // Si succès : le StreamBuilder gère la redirection automatiquement
   }
 
-  ///Authentification par numero de téléphone. Cette méthode utilise Firebase pour envoyer un code de vérification au numéro de téléphone fourni, puis affiche une boîte de dialogue pour que l'utilisateur puisse entrer le code OTP reçu. Si le code est correct, l'utilisateur est connecté et redirigé vers la page d'accueil.
-  ///Elle est appelée lorsque l'utilisateur appuie sur le bouton "Continuer" après avoir entré son numéro de téléphone.
+  ///Authentification par numero de téléphone. Cette méthode utilise Firebase
+  ///pour envoyer un code OTP au numéro de téléphone fourni, et affiche la page de saisie du code.
+  ///Elle est appelée lorsque l'utilisateur appuie sur le bouton "Continuer"
+  ///après avoir entré son numéro de téléphone.
   void sendCode() async {
+    if (isLoading) return;
     if (fullPhoneNumber.isNotEmpty) {
+      setState(() => isLoading = true);
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: fullPhoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // Android uniquement : détection automatique du code
           await FirebaseAuth.instance.signInWithCredential(credential);
-          // La navigation vers HomePage est gérée par le StreamBuilder dans main.dart
+          setState(() => isLoading = false);
         },
         verificationFailed: (FirebaseAuthException e) {
           if (!mounted) return;
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text("Erreur : ${e.message}")));
+          setState(() => isLoading = false);
         },
         codeSent: (String verificationId, int? resendToken) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Un code vous a été envoyé par SMS.")),
           );
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder:
-                (context) => OtpCheckBox(
-                  verificationId: verificationId,
-                  onSubmitOTP: (otp) async {
-                    PhoneAuthCredential credential =
-                        PhoneAuthProvider.credential(
-                          verificationId: verificationId,
-                          smsCode: otp,
-                        );
-                    // final currentUser = FirebaseAuth.instance.currentUser;
-                    // await currentUser
-                    //    ?.delete(); // Suppression de la session anonym
-                    // Force une vraie déconnexion pour que authStateChanges se déclenche
-                    await FirebaseAuth.instance.signOut();
-
-                    // Petite pause pour laisser le stream traiter la déconnexion
-                    await Future.delayed(Duration(milliseconds: 500));
-
-                    await FirebaseAuth.instance.signInWithCredential(
-                      credential,
-                    );
-                    await FirebaseAuth.instance.signInWithCredential(
-                      credential,
-                    );
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
-                    // Le StreamBuilder détecte le changement et redirige automatiquement
-                  },
-                ),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => OtpPage(
+                    verificationId: verificationId,
+                    onSubmitOTP: (otp) async {
+                      PhoneAuthCredential credential =
+                          PhoneAuthProvider.credential(
+                            verificationId: verificationId,
+                            smsCode: otp,
+                          );
+                      await FirebaseAuth.instance.signOut();
+                      await FirebaseAuth.instance.signInWithCredential(
+                        credential,
+                      );
+                      setState(() => isLoading = false);
+                      // Le StreamBuilder gère la redirection
+                    },
+                  ),
+            ),
           );
         },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          // Pas de setState nécessaire ici si tu n'utilises pas
-          // verificationId ailleurs dans le widget
-        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Veuillez entrer un numéro valide.")),
       );
+      setState(() => isLoading = false);
     }
   }
 
@@ -193,7 +184,7 @@ class _AuthPageState extends State<AuthPage> {
               padding: const EdgeInsets.only(
                 left: 40,
                 right: 40,
-                top: 200,
+                top: 150,
                 bottom: 0,
               ),
               child: Column(
@@ -267,11 +258,10 @@ class _AuthPageState extends State<AuthPage> {
                   SizedBox(height: 30),
 
                   /// Bouton d'authentification avec numéro de téléphone
-                  /// Ce bouton appelle la méthode sendCode() qui gère l'envoi du code de vérification et la connexion de l'utilisateur.
+                  /// Ce bouton appelle la méthode sendCode() qui envoi
+                  /// un code de vérification et la connexion de l'utilisateur.
                   ElevatedButton(
-                    onPressed: () {
-                      sendCode();
-                    },
+                    onPressed: sendCode,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red[900],
                       shape: RoundedRectangleBorder(
@@ -282,14 +272,17 @@ class _AuthPageState extends State<AuthPage> {
                         vertical: 16,
                       ),
                     ),
-                    child: Text(
-                      "Continuer",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
+                    child:
+                        isLoading
+                            ? CircularProgressIndicator(color: Colors.white)
+                            : Text(
+                              "Continuer",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
                   ),
                 ],
               ),
