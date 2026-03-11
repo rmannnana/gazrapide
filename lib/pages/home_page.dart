@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gazrapide/widgets/drawer.dart';
 import 'package:gazrapide/widgets/dialogs.dart';
+import 'package:gazrapide/widgets/drawer.dart';
 import 'package:universe/universe.dart';
+
 import '../general_variables.dart';
 import '../models.dart';
 import '../services/firebase/cloud_firestore.dart';
@@ -58,9 +59,6 @@ class _HomePageState extends State<HomePage> {
             );
           }
         }
-        print(
-          "🔍 Shop de l'utilisateur: ${userShop?.name ?? 'Aucun'}: ${userShop?.phonenumbers ?? 'Aucun'}: ${userShop?.ownerid ?? 'Aucun'} \n Nombre de point de vente: ${shopsList.length} ",
-        );
 
         /// Générer les markers
         markers =
@@ -89,9 +87,6 @@ class _HomePageState extends State<HomePage> {
               .map((doc) {
                 try {
                   Shop shop = Shop.fromFirestore(doc);
-                  print(
-                    "✅ Shop chargé: ${shop.name}, 📞 Téléphones: ${shop.phonenumbers}, 🏷️ Marques: ${shop.availablebrands}, 🏷️ Propriétaire: ${shop.ownerid}",
-                  );
                   return shop;
                 } catch (e) {
                   return null; // On retourne null pour gérer l'erreur
@@ -111,7 +106,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.red[900],
         centerTitle: true,
         title: Text(
-          "Map",
+          "Accueil",
           style: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: 30,
@@ -130,7 +125,6 @@ class _HomePageState extends State<HomePage> {
           markers: U.MarkerLayer(
             markers,
             onTap: (latlng, data) {
-              print("Marker cliqué : ${data.name}");
               CustomDialogs.showShopDetails(context, data);
             },
           ),
@@ -194,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FaIcon(FontAwesomeIcons.edit),
+                            FaIcon(FontAwesomeIcons.penToSquare),
                             SizedBox(width: 10),
                             Text(
                               "Gérer mon stock",

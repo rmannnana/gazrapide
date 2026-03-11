@@ -28,15 +28,56 @@ class _MyAppState extends State<MyApp> {
       // Désigne la page à afficher selon l'état de l'authentification
       stream: auth.authStateChanges(),
       builder: (context, snapshot) {
-        print("STREAM EVENT");
-        print("snapshot.hasData = ${snapshot.hasData}");
-        print("uid = ${snapshot.data?.uid}");
-        print("isAnonymous = ${snapshot.data?.isAnonymous}");
+        // Debug visible à l'écran
+        final debugText =
+            'hasData:${snapshot.hasData} | '
+            'uid:${snapshot.data?.uid?.substring(0, 6) ?? "null"} | '
+            'anon:${snapshot.data?.isAnonymous}';
 
         if (snapshot.hasData) {
-          return MaterialApp(home: HomePage());
+          return MaterialApp(
+            home: Stack(
+              children: [
+                HomePage(),
+                Positioned(
+                  top: 40,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    color: Colors.black54,
+                    padding: EdgeInsets.all(4),
+                    child: Text(
+                      debugText,
+                      style: TextStyle(color: Colors.yellow, fontSize: 11),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         } else {
-          return MaterialApp(home: LandingPage());
+          return MaterialApp(
+            home: Stack(
+              children: [
+                LandingPage(),
+                Positioned(
+                  top: 40,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    color: Colors.black54,
+                    padding: EdgeInsets.all(4),
+                    child: Text(
+                      debugText,
+                      style: TextStyle(color: Colors.yellow, fontSize: 11),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         }
       },
     );
