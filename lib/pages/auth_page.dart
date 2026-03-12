@@ -7,6 +7,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:universe/universe.dart';
 
 import '../services/firebase/firebase_auth.dart';
+import 'home_page.dart';
 import 'otp_page.dart';
 
 class AuthPage extends StatefulWidget {
@@ -37,21 +38,24 @@ class _AuthPageState extends State<AuthPage> {
 
   /// Méthode d'authentification via Google
   Future<void> handleGoogleSignIn(BuildContext context) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser != null && currentUser.isAnonymous) {
-      await currentUser.delete();
+    if (FirebaseAuth.instance.currentUser?.isAnonymous ?? false) {
+      await FirebaseAuth.instance.signOut();
     }
 
     final userCredential = await Auth().signinWithGoogle();
 
     if (userCredential == null) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Connexion Google annulée ou échouée')),
       );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     }
-    // Si succès : le StreamBuilder gère la redirection automatiquement
   }
 
   ///Authentification par numero de téléphone. Cette méthode utilise Firebase

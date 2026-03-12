@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gazrapide/pages/home_page.dart';
 import 'package:gazrapide/pages/landing_page.dart';
 import 'package:gazrapide/pages/politique.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -80,7 +79,7 @@ class _MainDrawerState extends State<MainDrawer> {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  "Trouver le gaz rapidement",
+                  "Trouver du gaz rapidement",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -101,10 +100,6 @@ class _MainDrawerState extends State<MainDrawer> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context); // Ferme le dialog
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
                     },
                     style: ElevatedButton.styleFrom(),
                     child: Row(
