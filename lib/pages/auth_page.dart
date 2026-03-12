@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gazrapide/general_variables.dart';
-import 'package:gazrapide/pages/landing_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:universe/universe.dart';
@@ -93,7 +92,7 @@ class _AuthPageState extends State<AuthPage> {
                             verificationId: verificationId,
                             smsCode: otp,
                           );
-                      await FirebaseAuth.instance.signOut();
+                      // await FirebaseAuth.instance.signOut();
                       await FirebaseAuth.instance.signInWithCredential(
                         credential,
                       );
@@ -163,10 +162,7 @@ class _AuthPageState extends State<AuthPage> {
             centerTitle: true,
             leading: IconButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LandingPage()),
-                );
+                Navigator.pop(context);
               },
               icon: Icon(Icons.arrow_back),
             ),

@@ -17,12 +17,10 @@ class _LandingPageState extends State<LandingPage> {
   /// Connexion Anonyme
   Future<void> handleAnonymousSignIn(BuildContext context) async {
     try {
-      // Déconnecte toute session en cours avant connexion anonyme
+      // Déconnexion avant Authentification anomyne
       await FirebaseAuth.instance.signOut();
       await Auth().signinAnonymously();
-
-      if (!context.mounted) return; // ⚠️ Sécurité async gap
-
+      if (!context.mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),

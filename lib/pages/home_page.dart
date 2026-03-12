@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.red[900],
         centerTitle: true,
         title: Text(
-          "Accueil",
+          "Gaz Rapide",
           style: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: 30,
@@ -117,8 +117,10 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: U.GoogleMap(
           center: (userPosition != null) ? userPosition : LatLng(12.35, -1.53),
-          type: GoogleMapType.Street,
+          type: GoogleMapType.Satellite,
           zoom: 12,
+          minZoom: 6, // niveau de zoom minimum
+          maxZoom: 18,
           live: true,
           moveWhenLive: false,
           showLocator: true,

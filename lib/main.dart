@@ -28,57 +28,8 @@ class _MyAppState extends State<MyApp> {
       // Désigne la page à afficher selon l'état de l'authentification
       stream: auth.authStateChanges(),
       builder: (context, snapshot) {
-        // Debug visible à l'écran
-        final debugText =
-            'hasData:${snapshot.hasData} | '
-            'uid:${snapshot.data?.uid?.substring(0, 6) ?? "null"} | '
-            'anon:${snapshot.data?.isAnonymous}';
-
-        if (snapshot.hasData) {
-          return MaterialApp(
-            home: Stack(
-              children: [
-                HomePage(),
-                Positioned(
-                  top: 40,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    color: Colors.black54,
-                    padding: EdgeInsets.all(4),
-                    child: Text(
-                      debugText,
-                      style: TextStyle(color: Colors.yellow, fontSize: 11),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        } else {
-          return MaterialApp(
-            home: Stack(
-              children: [
-                LandingPage(),
-                Positioned(
-                  top: 40,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    color: Colors.black54,
-                    padding: EdgeInsets.all(4),
-                    child: Text(
-                      debugText,
-                      style: TextStyle(color: Colors.yellow, fontSize: 11),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
+        final home = snapshot.hasData ? HomePage() : LandingPage();
+        return MaterialApp(home: home);
       },
     );
   }

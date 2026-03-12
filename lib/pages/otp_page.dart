@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gazrapide/pages/landing_page.dart';
+
+import 'home_page.dart';
 
 class OtpPage extends StatefulWidget {
   final String verificationId;
@@ -30,6 +31,16 @@ class _OtpPageState extends State<OtpPage> {
     if (otp.length == 6) {
       try {
         await widget.onSubmitOTP(otp);
+        if (!mounted) return;
+
+        /// La navigation vers HomePage doit se faire automatiquement par le
+        /// StreamBuilder mais ça marche pas, donc je vais forcer la navigation
+        /// ici.
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+          (route) => false, // éfface l'historique de navigation
+        );
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -56,10 +67,7 @@ class _OtpPageState extends State<OtpPage> {
             centerTitle: true,
             leading: IconButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LandingPage()),
-                );
+                Navigator.pop(context);
               },
               icon: Icon(Icons.arrow_back),
             ),
@@ -113,7 +121,7 @@ class _OtpPageState extends State<OtpPage> {
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: Colors.red[900],
                         ),
                         child: Text(
                           "Annuler",

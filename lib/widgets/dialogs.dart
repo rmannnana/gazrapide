@@ -85,6 +85,47 @@ Future<void> updateShopStoreFirestore(Shop shop) async {
   }
 }
 
+/// Fonction qui récupère la position actuelle de l'utilisateur
+Future<void> _getCurrentLocation(
+  BuildContext context,
+  ValueNotifier<List<double>> locationNotifier,
+) async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!context.mounted) return;
+  if (!serviceEnabled) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Activez le service de localisation')),
+    );
+    return;
+  }
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (!context.mounted) return;
+    if (permission == LocationPermission.denied) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Permission refusée')));
+      return;
+    }
+  }
+
+  if (!context.mounted) return;
+  if (permission == LocationPermission.deniedForever) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Permission définitivement refusée')),
+    );
+    return;
+  }
+
+  Position position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.high,
+  );
+
+  locationNotifier.value = [position.latitude, position.longitude];
+}
+
 class CustomDialogs {
   // BottomSheet pour voir les détails d'un point de vente
   static void showShopDetails(BuildContext context, Shop selectedShop) {
@@ -243,7 +284,7 @@ class CustomDialogs {
                             },
                           ),
                           ElevatedButton(
-                            onPressed: () async {
+                            /*onPressed: () async {
                               bool serviceEnabled =
                                   await Geolocator.isLocationServiceEnabled();
                               if (!serviceEnabled) {
@@ -256,7 +297,6 @@ class CustomDialogs {
                                 );
                                 return;
                               }
-
                               LocationPermission permission =
                                   await Geolocator.checkPermission();
                               if (permission == LocationPermission.denied) {
@@ -293,8 +333,13 @@ class CustomDialogs {
                                 position.latitude,
                                 position.longitude,
                               ];
-                            },
-                            child: Text('Enregistrer votre position actuelle.'),
+                            },*/
+                            onPressed:
+                                () => _getCurrentLocation(
+                                  context,
+                                  locationNotifier,
+                                ),
+                            child: Text('Enregistrer votre position'),
                           ),
                         ],
                       ),
